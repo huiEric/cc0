@@ -1,0 +1,79 @@
+/* Assignment: quot rem
+ * ---------------------
+ * Course: CS 15-122: Principles of Imperative Computation
+ * Author： huieric, HUST, China
+ * 2018-05-01 16:13
+ */
+
+#use <conio>
+#use <util>
+#use <string>
+
+int quot(int x, int y)
+//@ensures \result==x/y;
+{
+    if(y==0)
+        error("divide by 0");
+    if(x>int_max() || x<int_min())
+        error("Overflow");
+    if(x<y)
+        return 0;    
+    int k = 0;
+    int c = y;
+    while(x>=c)
+    {
+        if(x<y+c)
+            return 1<<k;
+        c<<=1;
+        k+=1;
+    }
+    return quot(x-(c>>1),y)+(1<<(k-1));
+}
+
+int rem(int x, int y)
+//@ensures \result==x%y;
+{
+    if(y==0)
+        error("modulo by 0");
+    if(x<y)
+        return x;    
+    int c = y;
+    while(x>=c)
+    {
+        if(x<y+c)
+            return x-c;
+        c<<=1;
+    }
+    return rem(x-(c>>1), y);
+}
+
+string my_int2hex(int my_x) 
+//@ensures string_equal(\result, int2hex(my_x));
+{
+    int x = my_x;
+    char[] hex_chararray = alloc_array(char, 9);
+    for(int i=7; i>=0; i--)
+    {
+        int h = x&0xf;
+        hex_chararray[i] = char_chr(h<10? char_ord('0')+h : char_ord('A')+h-10);
+        x>>=4;
+    }
+    hex_chararray[8] = '\0';
+    return string_from_chararray(hex_chararray);
+}
+
+int lsr(int x, int y)
+{
+    int mask = ~(-1<<(32-y));
+    return (x>>y)&mask;
+}
+
+int main()
+{
+    assert(quot(10,3)==3);
+    assert(rem(10,3)==1);   
+    assert(string_equal(my_int2hex(-1), int2hex(-1)));
+    println(my_int2hex(-1));
+    println(my_int2hex(lsr(-1, 1)));
+    return 0;
+}
