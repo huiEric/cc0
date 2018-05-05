@@ -1,0 +1,61 @@
+/* Assignment: 3, 第四讲习题
+ * ---------------------
+ * Course: CS 15-122: Principles of Imperative Computation
+ * Author： huieric, HUST, China
+ * 2018-05-05 15:26
+ */
+
+#use <conio>
+
+int[] array_part(int[] A, int i, int j)
+//@requires i>=0 && j>=0 && i<\length(A) && j<\length(A) && j>=i;
+//@ensures \length(\result)==j-i+1;
+{
+    int[] B = alloc_array(int, j-i+1);
+    for(int k=i; k<=j; k++)
+    //@loop_invariant k>=i;
+    {
+        B[k-i] = A[k];
+    }
+    return B;
+}
+
+int copy_into(int[] source, int i, int n, int[] target, int j)
+//@requires 0<=i && i+n<=\length(source) && 0<=j && j+n<=\length(target);
+//@ensures \result==target[j+n-1];
+{
+    for(int k=0; k<n; k++)
+    //@loop_invariant k>=0;
+    {
+        target[j+k] = source[i+k];
+    }
+    return target[j+n-1];
+}
+
+int f(int[] A)
+//@requires \length(A)>0;
+//@ensures \result==A[0];
+{
+    return A[0];
+}
+
+int main()
+{
+    /* array_part check part */
+    int[] A = alloc_array(int, 10);
+    for(int i=0; i<10; i++)
+        A[i] = i+1;
+    int[] B = array_part(A, 3, 8);
+    // assert(le`ngth(B)==6);
+    for(int i=3; i<=8; i++)
+        assert(A[i]==B[i-3]);
+    
+    /* copy_into check part */
+    copy_into(A, 1, 3, B, 3);
+    for(int i=0; i<3; i++)
+        assert(B[3+i]==A[1+i]);
+
+    /* f check part */
+    assert(f(A)==1);
+    return 0;
+}
