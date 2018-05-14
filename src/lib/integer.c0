@@ -1,0 +1,89 @@
+/* Functions for working with integers
+ * 
+ * Author: Huieric, HUST, Wuhan, China
+ * 15-122 Principles of Imperative Computation */
+
+
+/*** Interface ***/
+
+
+/*** Implementation ***/
+
+int quot(int x, int y)
+//@ensures \result==x/y;
+{
+    if(y==0)
+        error("divide by 0");
+    if(x>int_max() || x<int_min())
+        error("Overflow");
+    if(x<y)
+        return 0;    
+    int k = 0;
+    int c = y;
+    while(x>=c)
+    {
+        if(x<y+c)
+            return 1<<k;
+        c<<=1;
+        k+=1;
+    }
+    return quot(x-(c>>1),y)+(1<<(k-1));
+}
+
+int rem(int x, int y)
+//@ensures \result==x%y;
+{
+    if(y==0)
+        error("modulo by 0");
+    if(x<y)
+        return x;    
+    int c = y;
+    while(x>=c)
+    {
+        if(x<y+c)
+            return x-c;
+        c<<=1;
+    }
+    return rem(x-(c>>1), y);
+}
+
+string my_int2hex(int my_x) 
+//@ensures string_equal(\result, int2hex(my_x));
+{
+    int x = my_x;
+    char[] hex_chararray = alloc_array(char, 9);
+    for(int i=7; i>=0; i--)
+    {
+        int h = x&0xf;
+        hex_chararray[i] = char_chr(h<10? char_ord('0')+h : char_ord('A')+h-10);
+        x>>=4;
+    }
+    hex_chararray[8] = '\0';
+    return string_from_chararray(hex_chararray);
+}
+
+int lsr(int x, int y)
+{
+    int mask = ~(-1<<(32-y));
+    return (x>>y)&mask;
+}
+
+int POW(int x, int y)
+//@requires y>=0;
+{
+    if(y==0)
+        return 1;
+    else 
+    {
+        int exp = POW(x,y-1);
+        int INT_MAX = int_max();
+        int INT_MIN = int_min();
+        if((exp>0 && x<=INT_MAX/exp && x>=INT_MIN/exp) || 
+           (exp==0) ||
+           (exp==-1 && x>=-INT_MAX) ||
+           (exp<-1 && x>=INT_MAX/exp && x<=INT_MIN/exp))
+            return x*exp;
+        else 
+            error("Overflow");
+    }    
+}

@@ -1,0 +1,10 @@
+#use "lib/array.c0"
+
+int main() 
+{
+    int[] A = alloc_array(int, 10);
+    A[0] = 1; A[1] = 2; A[2] = 3; A[3] = 4; A[4] = 5;
+    A[5] = 3; A[6] = 1; A[7] = 4; A[8] = 2; A[9] = 5;
+    assert(is_permutation(A, 0, 5, 5)==true);
+    return 0;
+}

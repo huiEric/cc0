@@ -1,0 +1,98 @@
+/* Functions for working with arrays of integers
+ * 
+ * Author: Huieric, HUST, Wuhan, China
+ * 15-122 Principles of Imperative Computation */
+
+
+/*** Interface ***/
+
+/* inplace_swap(A, i, j) switches A[i] and A[j] in place */
+void inplace_swap(int[] A, int i, int j)
+/*@requires 0 <= i && i < \length(A) && 0 <= j && j < \length(A); @*/ ;
+
+/* array_part(A, i, j) returns a copy of part of A, i inclusive and j exclusive */
+int[] array_part(int[] A, int i, int j)
+/*@requires 0 <=i && i <= j && j <= \length(A); @*/ ;
+
+/*** Implementation ***/
+
+void inplace_swap(int[] A, int i, int j)
+//@requires 0 <= i && i < \length(A);
+//@requires 0 <= j && j < \length(A);
+{
+    A[i] = A[i]-A[j];
+    A[j] = A[i]+A[j];
+    A[i] = A[j]-A[i];
+}
+
+int[] array_part(int[] A, int i, int j)
+//@requires i <= 0 && i <= j && j <= \length(A);
+//@ensures \length(\result)==j-i;
+{
+    int[] B = alloc_array(int, j-i);
+    for(int k=i; k<j; k++)
+    //@loop_invariant k>=i;
+    {
+        B[k-i] = A[k];
+    }
+    return B;
+}
+
+int copy_into(int[] source, int i, int n, int[] target, int j)
+//@requires 0<=i && i+n<=\length(source) && 0<=j && j+n<=\length(target);
+//@ensures \result==target[j+n-1];
+{
+    for(int k=0; k<n; k++)
+    //@loop_invariant k>=0;
+    {
+        target[j+k] = source[i+k];
+    }
+    return target[j+n-1];
+}
+
+bool eq_segs(int[] A, int lower1, int upper1, int[] B, int lower2)
+//@requires 0 <= lower1 && lower1 <= upper1 && upper1 <= \length(A);
+//@requires 0 <= lower2 && lower2+upper1-lower1 <= \length(B);
+{
+    for(int i = 0; i < upper1-lower1; i++)
+        //@loop_invariant 0 <= i && i < upper1-lower1;
+        if(A[lower1+i]!=B[lower2+i])
+            return false;
+    return true;
+}
+
+int[] array_copy(int[] A, int n)
+//@requires 0 <= n && n <= \length(A);
+{
+    int[] B = alloc_array(int, n);
+    for(int i = 0; i < n; i++)
+    //@loop_invariant 0 <= i && i < n;
+    //@loop_invariant eq_segs(A, 0, i, B, 0);
+    {
+        B[i] = A[i];
+    }
+    return B;
+}
+
+bool is_permutation(int[] A, int left1, int right1, int left2)
+//@requires 0<=left1 && left1<=right1 && right1<=\length(A);
+//@requires 0<=left2 && left2+right1-left1<=\length(A);
+{
+    int[] B = array_part(A, left2, left2+right1-left1);
+    for(int i = left1; i < right1; i++)
+    //@loop_invariant left1 <= i && i < right1;    
+    {
+        bool found = false;
+        for(int j = i-left1; j < right1-left1; j++)
+        //@loop_invariant i-left1 <= j && j < right1-left1;
+        //@loop_invariant eq_segs(A, left1, i, B, j);
+            if(A[i]==B[j])
+            {
+                inplace_swap(B, i-left1, j);
+                found = true;
+            }
+        if(found)
+            return false;
+    }
+    return true;
+}
